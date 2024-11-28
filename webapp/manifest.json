@@ -1,0 +1,97 @@
+{
+    "_version": "1.65.0",
+    "sap.app": {
+        "id": "jeuplfromiflow.journalentryuploadfromiflow",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:basic",
+            "version": "1.15.6",
+            "toolsId": "5b598cde-b2e8-4da2-b480-b8055c527b82"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": true,
+        "dependencies": {
+            "minUI5Version": "1.130.2",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "jeuplfromiflow.journalentryuploadfromiflow.i18n.i18n"
+                }
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "controlAggregation": "pages",
+                "controlId": "app",
+                "transition": "slide",
+                "type": "View",
+                "viewType": "XML",
+                "path": "jeuplfromiflow.journalentryuploadfromiflow.view",
+                "async": true,
+                "viewPath": "jeuplfromiflow.journalentryuploadfromiflow.view"
+            },
+            "routes": [
+                {
+                    "name": "RouteMainView",
+                    "pattern": ":?query:",
+                    "target": [
+                        "TargetMainView"
+                    ]
+                }
+            ],
+            "targets": {
+                "TargetMainView": {
+                    "id": "MainView",
+                    "name": "MainView"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "jeuplfromiflow.journalentryuploadfromiflow.view.App",
+            "type": "XML",
+            "id": "App"
+        }
+    }
+}
