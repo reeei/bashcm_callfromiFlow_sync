@@ -1,6 +1,42 @@
 <mvc:View controllerName="jeuplfromiflow.journalentryuploadfromiflow.controller.MainView"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:u="sap.ui.unified">
     <Page id="page" title="{i18n>title}">
+    <content>
+        <Panel id="panel0" headerText="input file">
+            <VBox width="100%" direction="Column" id="vbox0">
+		        <u:FileUploader id="fileUploader" name="myFileUpload" uploadUrl="upload/" tooltip="Upload your file to the local server" 
+                                uploadComplete="handleUploadComplete" change="onFileChange" typeMissmatch="handleTypeMissmatch" style="Emphasized" 
+                                fileType="xls,xlsx" placeholder="Choose a file for Upload...">
+				    <u:parameters>
+					    <u:FileUploaderParameter id="uploaderparam0" name="Accept-CH" value="Viewport-Width"/>
+    					<u:FileUploaderParameter id="uploaderparam1" name="Accept-CH" value="Width"/>
+	    				<u:FileUploaderParameter id="uploaderparam2" name="Accept-CH-Lifetime" value="86400"/>
+		    		</u:parameters>
+			    </u:FileUploader>
+            </VBox>
+            <VBox width="100%" direction="Column" id="vbox1">
+                <FlexBox id="flexbox0" direction="Row" alignItems="Start">
+		            <Button id="button0" text="Download Template" press="onTempDownload" icon="sap-icon://download-from-cloud"/>
+                    <Button id="button1" text="Upload File" press="onUploadPress" type="Emphasized" icon="sap-icon://upload-to-cloud"/>
+                </FlexBox>
+            </VBox>
+        </Panel>
+        <Panel id="panel1" headerText="output file">
+            <VBox width="100%" direction="Column" id="vbox2">
+		        <u:FileUploader id="fileUploader1" name="myFileUpload" uploadUrl="upload/" tooltip="Upload your file to the local server" 
+                                uploadComplete="handleUploadComplete" change="handleValueChange" typeMissmatch="handleTypeMissmatch" style="Emphasized" 
+                                fileType="xlsx" placeholder="Choose a file for Upload...">
+				    <u:parameters>
+					    <u:FileUploaderParameter id="uploaderparam3" name="Accept-CH" value="Viewport-Width"/>
+					    <u:FileUploaderParameter id="uploaderparam4" name="Accept-CH" value="Width"/>
+					    <u:FileUploaderParameter id="uploaderparam5" name="Accept-CH-Lifetime" value="86400"/>
+				    </u:parameters>
+			    </u:FileUploader>
+            </VBox>
+        </Panel>
+    </content>
     </Page>
 </mvc:View>
