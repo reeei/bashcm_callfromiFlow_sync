@@ -1,7 +1,8 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    'sap/ui/core/util/File'
-], (Controller, uFile) => {
+    'sap/ui/core/util/File',
+    'sap/ui/core/BusyIndicator'
+], (Controller, uFile, BusyIndicator) => {
     "use strict";
     var fileContent;
     var fileName;
@@ -45,6 +46,7 @@ sap.ui.define([
             // const url = "https://" + host + "/632_JournalEntrySalary";
             // Http.open("GET", url);
             // Http.send();
+            BusyIndicator.show(0);
             var filename = "excelfile";
             var method = "POST";
             var obj = {
@@ -89,6 +91,7 @@ sap.ui.define([
             var aUint8Array = Uint8Array.from(atob(data), c => c.charCodeAt(0));
             var oblob = new Blob([aUint8Array], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             uFile.save(oblob, filename, 'xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            BusyIndicator.hide();
 
             // var oblob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             // uFile.save(oblob, filename);
@@ -101,6 +104,7 @@ sap.ui.define([
             // anchor.click();
         },
         onTempDownload: async function () {
+            BusyIndicator.show(0);
             var rows = ["会社コード",
                 "会計伝票タイプ",
                 "元帳グループ",
@@ -275,6 +279,7 @@ sap.ui.define([
             a.download = `JournalentryTemplate.xlsx`;
             a.click();
             a.remove();
+            BusyIndicator.hide();
         },
 
         convertBase64(urlSafeBase64) {
