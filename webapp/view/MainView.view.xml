@@ -5,11 +5,11 @@
     xmlns:u="sap.ui.unified">
     <Page id="page" title="{i18n>title}">
     <content>
-        <Panel id="panel0" headerText="input file">
+        <Panel id="panel0" headerText="{i18n>UploadFilePanelHeader}">
             <VBox width="100%" direction="Column" id="vbox0">
-		        <u:FileUploader id="fileUploader" name="myFileUpload" uploadUrl="upload/" tooltip="Upload your file to the local server" 
+		        <u:FileUploader id="fileUploader" name="myFileUpload" uploadUrl="upload/" tooltip="{i18n>fileUploaderTooltip}" 
                                 uploadComplete="handleUploadComplete" change="onFileChange" typeMissmatch="handleTypeMissmatch" style="Emphasized" 
-                                fileType="xls,xlsx" placeholder="Choose a file for Upload...">
+                                fileType="xlsx" placeholder="{i18n>fileUploaderPlaceholder}">
 				    <u:parameters>
 					    <u:FileUploaderParameter id="uploaderparam0" name="Accept-CH" value="Viewport-Width"/>
     					<u:FileUploaderParameter id="uploaderparam1" name="Accept-CH" value="Width"/>
@@ -19,12 +19,12 @@
             </VBox>
             <VBox width="100%" direction="Column" id="vbox1">
                 <FlexBox id="flexbox0" direction="Row" alignItems="Start">
-		            <Button id="button0" text="Download Template" press="onTempDownload" icon="sap-icon://download-from-cloud"/>
-                    <Button id="button1" text="Upload File" press="onUploadPress" type="Emphasized" icon="sap-icon://upload-to-cloud"/>
+		            <Button id="button0" text="{i18n>downloadTemplateButton}" press="onTempDownload" icon="sap-icon://download-from-cloud"/>
+                    <Button id="button1" text="{i18n>uploadFileButton}" press="onUploadPress" type="Emphasized" icon="sap-icon://upload-to-cloud"/>
                 </FlexBox>
             </VBox>
         </Panel>
-        <Panel id="panel1" headerText="output file">
+        <!-- <Panel id="panel1" headerText="output file">
             <VBox width="100%" direction="Column" id="vbox2">
 		        <u:FileUploader id="fileUploader1" name="myFileUpload" uploadUrl="upload/" tooltip="Upload your file to the local server" 
                                 uploadComplete="handleUploadComplete" change="handleValueChange" typeMissmatch="handleTypeMissmatch" style="Emphasized" 
@@ -36,7 +36,7 @@
 				    </u:parameters>
 			    </u:FileUploader>
             </VBox>
-        </Panel>
+        </Panel> -->
     </content>
     </Page>
 </mvc:View>

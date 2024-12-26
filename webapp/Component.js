@@ -22,9 +22,9 @@ sap.ui.define([
             // enable routing
             this.getRouter().initialize();
 
-            // var jQueryScript = document.createElement('script');
-			// jQueryScript.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
-			// document.head.appendChild(jQueryScript);
+            var jQueryScript = document.createElement('script');
+			jQueryScript.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+			document.head.appendChild(jQueryScript);
 
             // var jQueryScript = document.createElement('script');
 			// jQueryScript.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js');
