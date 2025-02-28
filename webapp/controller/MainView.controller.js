@@ -5,8 +5,9 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/m/Dialog", // ダイアログ表示用
     "sap/m/ProgressIndicator", // 進行状況用
-    "sap/m/MessageStrip" // MessageStrip の読み込み
-], (Controller, uFile, BusyIndicator, MessageToast, Dialog, ProgressIndicator, MessageStrip) => {
+    "sap/m/MessageStrip", // MessageStrip の読み込み
+    "sap/m/VBox"
+], (Controller, uFile, BusyIndicator, MessageToast, Dialog, ProgressIndicator, MessageStrip, VBox) => {
     "use strict";
     var mimeType;
     var fileExtension;
@@ -82,37 +83,40 @@ sap.ui.define([
                 MessageToast.show(resourceBundle.getText("NotUploadFileMessage"));
                 return;
             }
-            // BusyIndicator.show(0);
-            //*************************************************************
+
             // データ分割（伝票番号をキーとして100件ごとに分割）
             const chunkSize = 100;
             const endpoint = "https://apitiralhost.test.apimanagement.us10.hana.ondemand.com:443/call_journalentrypost_sync2";
             const batches = this._splitDataIntoChunks(this.fileContent, chunkSize, "Column4");
 
-            // 進行状況インジケーターの表示（ダイアログでラッピング）
+            // 進行状況インジケーターの作成
             const oProgressIndicator = new ProgressIndicator({
                 state: "None",
                 percentValue: 0,
-                displayValue: resourceBundle.getText("ProcessIndicatorMessage")
+                displayValue: resourceBundle.getText("ProcessIndicatorMessage"),
+                width: "auto" // ProgressIndicatorの横幅は自動調整
             });
+
+            // Dialogの作成
             const oDialog = new Dialog({
                 title: resourceBundle.getText("ProcessIndicatorTitle"),
-                content: oProgressIndicator
-                // beginButton: new sap.m.Button({
-                //     text: "キャンセル",
-                //     press: function () {
-                //         oDialog.close();
-                //     }
-                // })
+                content: oProgressIndicator, // ProgressIndicatorを直接ダイアログに追加
+                width: "50%", // Dialogの横幅設定
+                beginButton: new sap.m.Button({
+                    text: "キャンセル",
+                    press: function () {
+                        oDialog.close();
+                    }
+                })
             });
-            oDialog.open();  // ダイアログを開いて進行状況を表示
+
+            // ダイアログを開いて進行状況を表示
+            oDialog.open();
 
             // 処理進行状況をトラック
             let completed = 0;
             const total = batches.length;
 
-            // すべてのバッチを逐次POSTリクエスト
-            const results = [];
             try {
                 for (const [index, batch] of batches.entries()) {
                     const response = await this._postData(endpoint, batch); // API呼び出し
@@ -121,11 +125,10 @@ sap.ui.define([
                     // 進捗更新
                     completed++;
                     const percent = Math.round((completed / total) * 100);
-                    oProgressIndicator.setPercentValue(percent)
+                    oProgressIndicator.setPercentValue(percent); // 進行状況を更新
                 }
 
                 if (completed === total) {
-                    // sap.m.MessageToast.show(resourceBundle.getText("ProcessCompletedMessage"));
                     const messageStrip = new MessageStrip({
                         text: resourceBundle.getText("uploadFileConfirmMessage") +
                             "(" + resourceBundle.getText("UploadFileNameMessage") + uploadedFileName + ")",
@@ -140,10 +143,7 @@ sap.ui.define([
                 const mappedData = this._mapApiResults(this.fileContent, this.apiResults);
                 this._generateAndDownloadExcel(mappedData);
 
-                // results.push({ index, success: true, response });
             } catch (err) {
-                // MessageToast.show(resourceBundle.getText("ProcessErrorMessage"), ": ${err.message}");
-                // results.push({ index, success: false, error });
                 const messageStrip = new MessageStrip({
                     text: resourceBundle.getText("ProcessErrorMessage") + ": ${err.message}" +
                         "(" + resourceBundle.getText("UploadFileNameMessage") + uploadedFileName + ")",
@@ -157,6 +157,86 @@ sap.ui.define([
             // 処理が完了したらダイアログを閉じる
             oDialog.close();
             this.apiResults = [];
+            //     const resourceBundle = this.getView().getModel("i18n").getResourceBundle();
+            //     if (this.fileContent.length === 0) {
+            //         MessageToast.show(resourceBundle.getText("NotUploadFileMessage"));
+            //         return;
+            //     }
+            //     // BusyIndicator.show(0);
+            //     //*************************************************************
+            //     // データ分割（伝票番号をキーとして100件ごとに分割）
+            //     const chunkSize = 100;
+            //     const endpoint = "https://apitiralhost.test.apimanagement.us10.hana.ondemand.com:443/call_journalentrypost_sync2";
+            //     const batches = this._splitDataIntoChunks(this.fileContent, chunkSize, "Column4");
+
+            //     // 進行状況インジケーターの表示（ダイアログでラッピング）
+            //     const oProgressIndicator = new ProgressIndicator({
+            //         state: "None",
+            //         percentValue: 0,
+            //         displayValue: resourceBundle.getText("ProcessIndicatorMessage")
+            //     });
+            //     const oDialog = new Dialog({
+            //         title: resourceBundle.getText("ProcessIndicatorTitle"),
+            //         content: oProgressIndicator
+            //         // beginButton: new sap.m.Button({
+            //         //     text: "キャンセル",
+            //         //     press: function () {
+            //         //         oDialog.close();
+            //         //     }
+            //         // })
+            //     });
+            //     oDialog.open();  // ダイアログを開いて進行状況を表示
+
+            //     // 処理進行状況をトラック
+            //     let completed = 0;
+            //     const total = batches.length;
+
+            //     // すべてのバッチを逐次POSTリクエスト
+            //     const results = [];
+            //     try {
+            //         for (const [index, batch] of batches.entries()) {
+            //             const response = await this._postData(endpoint, batch); // API呼び出し
+            //             // レスポンスを全体の結果にマージ
+            //             this.apiResults = this.apiResults.concat(response);
+            //             // 進捗更新
+            //             completed++;
+            //             const percent = Math.round((completed / total) * 100);
+            //             oProgressIndicator.setPercentValue(percent)
+            //         }
+
+            //         if (completed === total) {
+            //             // sap.m.MessageToast.show(resourceBundle.getText("ProcessCompletedMessage"));
+            //             const messageStrip = new MessageStrip({
+            //                 text: resourceBundle.getText("uploadFileConfirmMessage") +
+            //                     "(" + resourceBundle.getText("UploadFileNameMessage") + uploadedFileName + ")",
+            //                 showCloseButton: true,
+            //                 showIcon: true,
+            //                 type: "Success"
+            //             });
+            //             this.getView().byId("panel0").addContent(messageStrip);
+            //         }
+
+            //         // レスポンスデータをマッピングし、Excelファイルとして出力
+            //         const mappedData = this._mapApiResults(this.fileContent, this.apiResults);
+            //         this._generateAndDownloadExcel(mappedData);
+
+            //         // results.push({ index, success: true, response });
+            //     } catch (err) {
+            //         // MessageToast.show(resourceBundle.getText("ProcessErrorMessage"), ": ${err.message}");
+            //         // results.push({ index, success: false, error });
+            //         const messageStrip = new MessageStrip({
+            //             text: resourceBundle.getText("ProcessErrorMessage") + ": ${err.message}" +
+            //                 "(" + resourceBundle.getText("UploadFileNameMessage") + uploadedFileName + ")",
+            //             showCloseButton: true,
+            //             showIcon: true,
+            //             type: "Error"
+            //         });
+            //         this.getView().byId("panel0").addContent(messageStrip);
+            //     }
+
+            //     // 処理が完了したらダイアログを閉じる
+            //     oDialog.close();
+            //     this.apiResults = [];
         },
         onTempDownload: async function () {
             BusyIndicator.show(0);
@@ -466,6 +546,61 @@ sap.ui.define([
             return localizedData;
         },
         _generateAndDownloadExcel: function (data) {
+            //************************************************************************************************* */
+            // const now = new Date();
+            // const timestamp = now.getFullYear().toString() +
+            //     (now.getMonth() + 1).toString().padStart(2, "0") +
+            //     now.getDate().toString().padStart(2, "0") +
+            //     now.getHours().toString().padStart(2, "0") +
+            //     now.getMinutes().toString().padStart(2, "0") +
+            //     now.getSeconds().toString().padStart(2, "0");
+
+            // // ファイル名にタイムスタンプを組み込み
+            // const fileName = `Result_${timestamp}`;
+
+            // // i18nリソースバンドルから項目名を取得
+            // const resourceBundle = this.getView().getModel("i18n").getResourceBundle();
+            // const logMessageHeader = resourceBundle.getText("Column75"); // "LogMessage" のキーから取得
+
+            // // 配列データをワークシート形式に変換
+            // const worksheet = XLSX.utils.json_to_sheet(data);
+
+            // // セルのフォーマット設定（特定の列のみ）
+            // const keys = Object.keys(data[0]);
+            // const logMessageIndex = keys.indexOf(logMessageHeader) + 1; // LogMessageヘッダ名のインデックス
+
+            // if (logMessageIndex > 0) {
+            //     const range = XLSX.utils.decode_range(worksheet["!ref"]);
+            //     for (let rowIdx = range.s.r + 1; rowIdx <= range.e.r; rowIdx++) {
+            //         const cellAddress = XLSX.utils.encode_cell({ c: logMessageIndex - 1, r: rowIdx });
+            //         if (worksheet[cellAddress]) {
+            //             worksheet[cellAddress].s = {
+            //                 alignment: { wrapText: true }, // セル内で改行を有効にする設定
+            //             };
+            //         }
+            //     }
+            // }
+
+            // // ワークブックにワークシートを追加
+            // const workbook = XLSX.utils.book_new();
+            // XLSX.utils.book_append_sheet(workbook, worksheet, "Result");
+
+            // // Excelファイルをバイナリデータとして生成
+            // const binaryData = XLSX.write(workbook, {
+            //     bookType: "xlsx",
+            //     type: "binary",
+            //     cellStyles: true // セルスタイルを適用するためのオプション
+            // });
+
+            // // バイナリデータをBlob形式に変換
+            // const blobData = new Blob(
+            //     [this._stringToArrayBuffer(binaryData)],
+            //     { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } // MIMEタイプを正確に指定
+            // );
+
+            // // sap.ui.core.util.Fileでダウンロード (拡張子を明示的に指定)
+            // sap.ui.core.util.File.save(blobData, fileName, "xlsx");
+            //*****************************************************************************
             const now = new Date();
             const timestamp = now.getFullYear().toString() +
                 (now.getMonth() + 1).toString().padStart(2, "0") +
@@ -484,20 +619,14 @@ sap.ui.define([
             // 配列データをワークシート形式に変換
             const worksheet = XLSX.utils.json_to_sheet(data);
 
-            // セルのフォーマット設定（特定の列のみ）
-            const keys = Object.keys(data[0]);
-            const logMessageIndex = keys.indexOf(logMessageHeader) + 1; // LogMessageヘッダ名のインデックス
-
-            if (logMessageIndex > 0) {
-                const range = XLSX.utils.decode_range(worksheet["!ref"]);
-                for (let rowIdx = range.s.r + 1; rowIdx <= range.e.r; rowIdx++) {
-                    const cellAddress = XLSX.utils.encode_cell({ c: logMessageIndex - 1, r: rowIdx });
-                    if (worksheet[cellAddress]) {
-                        worksheet[cellAddress].s = {
-                            alignment: { wrapText: true }, // セル内で改行を有効にする設定
-                        };
-                    }
-                }
+            // 折り返しスタイルを特定の列に適用
+            const logMessageColumn = Object.keys(data[0]).indexOf(logMessageHeader);
+            if (logMessageColumn >= 0) {
+                if (!worksheet["!cols"]) worksheet["!cols"] = [];
+                worksheet["!cols"][logMessageColumn] = {
+                    width: 75, // 幅を調整（任意の値）
+                    // alignment: { wrapText: true } // 折り返して全体表示を有効にする->有料版のみのため不可能
+                };
             }
 
             // ワークブックにワークシートを追加
@@ -519,6 +648,7 @@ sap.ui.define([
 
             // sap.ui.core.util.Fileでダウンロード (拡張子を明示的に指定)
             sap.ui.core.util.File.save(blobData, fileName, "xlsx");
+
             // MessageToast.show(resourceBundle.getText("OutputResultFileMessage"));
             const messageStrip = new MessageStrip({
                 text: resourceBundle.getText("OutputResultFileMessage") +
